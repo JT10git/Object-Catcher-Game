@@ -41,14 +41,13 @@ class ScoreBoard():
             return int(data.read())                
         
     def saveScore(self):
-        if self.score > self.highScore:
+        if self.score >= self.highScore:
             with open("high-score.txt", "w") as data:
                 data.write(str(self.score))
         
     def gameOver(self):
-        self.saveScore()
-        tkinter.messagebox.showinfo("G0t R3kT M8 ?", "U Ju5t G0t R3kT M8 !")        
-        if tkinter.messagebox.askyesno("G0t R3kT M8 ?", "Pl4y Ag41n ?"):
+        self.saveScore()      
+        if tkinter.messagebox.askyesno("Object Catcher Game", "Try again?"):
             self.reset()
         else:
             exit()
@@ -63,7 +62,7 @@ class ScoreBoard():
 
 class ItemsFallingFromSky():
     
-    def __init__(self,parent,canvas,player,board):
+    def __init__(self,parent,canvas,player,board, playerSelected):
         self.parent = parent                    # root form
         self.canvas = canvas                    # canvas to display
         self.player = player                    # to check touching
@@ -71,20 +70,28 @@ class ItemsFallingFromSky():
         
         self.fallSpeed = 50                     # falling speed        
         self.xPosition = randint(50, 750)       # random position
-        self.isgood = randint(0, 100)             # random goodness
+        self.isgood = randint(0, 100)           # random goodness
         
-        self.goodItems = ["momo.png"]
-        self.badItems = ["candy1.gif","candy2.gif","lollypop.gif"]
-        self.lifeItems = ["life.png"]
-        
+        if playerSelected == 0:
+            self.goodItems = ["momo.png"]
+            self.badItems = ["chicken.png","taco.png"]
+            self.lifeItems = ["life.png"]
+        elif playerSelected == 1:
+            self.goodItems = ["chicken.png"]
+            self.badItems = ["momo.png", "taco.png"]
+            self.lifeItems = ["life.png"]
+        else:
+            self.goodItems = ["taco.png"]
+            self.badItems = ["momo.png","chicken.png"]
+            self.lifeItems = ["life.png"]
+
         # create falling items
         if (self.isgood > 50):   
             self.itemPhoto = tkinter.PhotoImage(file = "images/{}" .format( choice(self.goodItems) ) )
             self.fallItem = self.canvas.create_image( (self.xPosition, 50) , image=self.itemPhoto , tag="good" )
-        elif (self.isgood > 2):
+        elif (self.isgood > 1):
             self.itemPhoto = tkinter.PhotoImage(file = "images/{}" . format( choice(self.badItems) ) )
             self.fallItem = self.canvas.create_image( (self.xPosition, 50) , image=self.itemPhoto , tag="bad" )
-        
         else:
             self.itemPhoto = tkinter.PhotoImage(file = "images/{}" . format( choice(self.lifeItems) ) )
             self.fallItem = self.canvas.create_image( (self.xPosition, 50) , image=self.itemPhoto , tag="life" )
@@ -143,9 +150,20 @@ class TheGame(ItemsFallingFromSky,ScoreBoard):
         self.canvas.focus_set()
         self.canvas.grid(row=1, column=1, padx=25, pady=25, sticky=W+N)
 
+        # play selector (random/temporary)
+        self.playerSelector = randint(0, 2)
+
         # player character
         self.playerPhoto = tkinter.PhotoImage(file = "images/{}" .format( "Bhakta_L.png" ) )
         self.playerChar = self.canvas.create_image( (475, 560) , image=self.playerPhoto , tag="player" )
+
+        if self.playerSelector == 1:
+            self.playerPhoto = tkinter.PhotoImage(file = "images/{}" .format( "jew.gif" ) )
+            self.playerChar = self.canvas.create_image( (475, 560) , image=self.playerPhoto , tag="player" )
+        elif self.playerSelector == 2:
+            self.playerPhoto = tkinter.PhotoImage(file = "images/{}" .format( "Hritesh_L.png" ) )
+            self.playerChar = self.canvas.create_image( (475, 560) , image=self.playerPhoto , tag="player" )
+
 
         # define score board
         self.personalboard = ScoreBoard(self.parent)
@@ -162,7 +180,7 @@ class TheGame(ItemsFallingFromSky,ScoreBoard):
 
 
     def createEnemies(self):
-        ItemsFallingFromSky(self.parent, self.canvas, self.playerChar, self.personalboard)
+        ItemsFallingFromSky(self.parent, self.canvas, self.playerChar, self.personalboard, self.playerSelector)
         self.parent.after(1100, self.createEnemies)
         
 
