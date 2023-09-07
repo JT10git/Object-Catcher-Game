@@ -173,9 +173,9 @@ class TheGame(ItemsFallingFromSky,ScoreBoard):
         
         
     def keyMoving(self, event):        
-        if (event.char == "a") and (self.canvas.coords(self.playerChar)[0] > 50):
+        if ((event.char == "a") or (event.char == "A")) and (self.canvas.coords(self.playerChar)[0] > 50):
             self.canvas.move(self.playerChar, -50, 0)            
-        if (event.char == "d") and (self.canvas.coords(self.playerChar)[0] < 750):
+        if ((event.char == "d") or (event.char == "D")) and (self.canvas.coords(self.playerChar)[0] < 750):
             self.canvas.move(self.playerChar, 50, 0)
 
 
